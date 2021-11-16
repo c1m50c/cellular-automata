@@ -9,7 +9,7 @@ class Cell:
         ## Fields
         ```py
         position: Tuple[int, int] = (0, 0) # Position of the Cell within the grid.
-        material_id: int = 0 # Cell's Material defaults to none.
+        material_id: int = 0 # ID of the Cell's material.
         ```
     """
     
@@ -25,7 +25,7 @@ class Cell:
             ## Parameters
             ```py
             position: Tuple[int, int] = (0, 0) # Position of the Cell within the grid.
-            material_id: int = 0 # Cell's Material defaults to none.
+            material_id: int = 0 # ID of the Cell's material.
             ```
         """
         
@@ -44,7 +44,16 @@ class Cell:
             raise AttributeError(f"Attribute {name} was either not found or of invalid type.")
     
     def __eq__(self, other: Cell) -> bool:
-        return self.material_id == other.material_id
+        return self.material_id == other.material_id and self.position == other.position
 
     def __ne__(self, other: object) -> bool:
-        return self.material_id != other.material_id
+        return self.material_id != other.material_id and self.position != other.position
+    
+    def __hash__(self) -> int:
+        return self.position.__hash__() + self.material_id.__hash__()
+    
+    def __repr__(self) -> str:
+        return str(self)
+    
+    def __str__(self) -> str:
+        return f"({self.material_id} @ {self.position})"
