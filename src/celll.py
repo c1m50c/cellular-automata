@@ -46,7 +46,7 @@ class Cell:
     def __eq__(self, other: Cell) -> bool:
         return self.material_id == other.material_id and self.position == other.position
 
-    def __ne__(self, other: object) -> bool:
+    def __ne__(self, other: Cell) -> bool:
         return self.material_id != other.material_id and self.position != other.position
     
     def __hash__(self) -> int:
