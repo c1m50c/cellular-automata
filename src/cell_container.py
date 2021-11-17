@@ -1,4 +1,5 @@
-from typing import Iterable, TypeVar, Union, Tuple
+from __future__ import annotations
+from typing import Iterable, TypeVar, Union, Set, Tuple
 from cell import Cell
 
 
@@ -14,6 +15,8 @@ class CellContainer(set):
         super().__init__()
     
     def add(self, element: _T) -> None:
+        if element is None:
+            return
         if isinstance(element, Cell):
             super().add(element)
     
@@ -23,7 +26,8 @@ class CellContainer(set):
                 return c
         return None
 
-    def get_neighbors(self, position: Tuple[int, int], cell_size: int) -> Tuple[Cell, Cell, Cell, Cell]:
+    def get_neighbors(self, position: Tuple[int, int], cell_size: int) -> CellContainer:
+        cc: CellContainer = CellContainer()
         x, y = position
         
         t: Cell = self.get_cell_at_position(position=(x, y + cell_size)) # Top
@@ -31,4 +35,9 @@ class CellContainer(set):
         l: Cell = self.get_cell_at_position(position=(x + cell_size, y)) # Left
         r: Cell = self.get_cell_at_position(position=(x - cell_size, y)) # Right
         
-        return (t, b, l, r)
+        cc.add(t)
+        cc.add(b)
+        cc.add(l)
+        cc.add(r)
+        
+        return cc

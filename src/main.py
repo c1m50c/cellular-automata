@@ -17,7 +17,7 @@ CLOCK = pygame.time.Clock()
 CELL_SIZE: int = 32
 
 # Simulation Variables #
-CELL_X, CELL_Y = 0, 0
+iterations: int = 0
 cells: CellContainer[Cell] = CellContainer()
 
 
@@ -43,6 +43,7 @@ def get_cell_at_mouse_pos() -> Tuple[int, int]:
 
 
 def simulate():
+    global iterations
     for x in range(0, WIDTH, CELL_SIZE):
         for y in range(0, HEIGHT, CELL_SIZE):
             neighbors = cells.get_neighbors((x, y), CELL_SIZE)
@@ -51,12 +52,11 @@ def simulate():
             
             if n < 2 and cell: # Cell Dies
                 cells.remove(cell)
-            elif (n == 2 or n == 3) and cell: # Cell Survives
-                continue
             elif n > 3 and cell: # Cell Dies
                 cells.remove(cell)
             elif n == 3 and not cell: # Cell Revives
                 cells.add(Cell(position=(x, y)))
+    iterations += 1
 
 
 def main():
@@ -72,6 +72,9 @@ def main():
         
         if simulating:
             simulate()
+            if len(cells) == 0:
+                print(f"Ending the Simulation with {iterations} Iterations.")
+                simulating = False
         else:
             selected_rect = pygame.Rect(x, y, CELL_SIZE, CELL_SIZE)
             pygame.draw.rect(SCREEN, SELECTED_CELL_COLOR, selected_rect, 2)
@@ -91,7 +94,12 @@ def main():
                     cells.remove(cells.get_cell_at_position((x, y)))
         elif not simulating and event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
+                print("Starting the Simulation...")
                 simulating = True
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                print(f"Ending the Simulation with {iterations} Iterations.")
+                simulating = False
         
         pygame.display.flip()
 
