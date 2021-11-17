@@ -14,10 +14,11 @@ SELECTED_CELL_COLOR: Tuple[int, int, int] = (248, 248, 248)
 WIDTH, HEIGHT = 512, 512
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 CLOCK = pygame.time.Clock()
-CELL_SIZE: int = 32
+CELL_SIZE: int = 16
 
 # Simulation Variables #
 iterations: int = 0
+show_grid: bool = True
 cells: CellContainer[Cell] = CellContainer()
 
 
@@ -52,9 +53,7 @@ def simulate():
             n: int = len(neighbors)
             cell: Cell = cells.get_cell_at_position((x, y))
             
-            if n < 2 and cell: # Cell Dies
-                cells.remove(cell)
-            elif n > 3 and cell: # Cell Dies
+            if (n < 2 or n > 3) and cell: # Cell Dies
                 cells.remove(cell)
             elif n == 3 and not cell: # Cell Revives
                 if x >= 0 and y >= 0 and x <= WIDTH and y <= HEIGHT:
@@ -63,17 +62,21 @@ def simulate():
 
 
 def main():
+    global show_grid
     pygame.display.set_caption("Cellular Automata")
     simulating: bool = False
     
     while True:
         SCREEN.fill(BACKGROUND_COLOR)
         draw_cells()
-        draw_grid()
+        
+        if show_grid:
+            draw_grid()
         
         x, y = get_cell_at_mouse_pos()
         
         if simulating:
+            CLOCK.tick(12)
             simulate()
             if len(cells) == 0:
                 print(f"Ending the Simulation with {iterations} Iterations.")
@@ -97,13 +100,20 @@ def main():
                     print(f"Removing Cell @ {x, y}")
                     cells.remove(cells.get_cell_at_position((x, y)))
         elif not simulating and event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                print("Starting the Simulation...")
-                simulating = True
-        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                print("Clearing Grid...")
+                cells.clear()
+        
+        if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 print(f"Ending the Simulation with {iterations} Iterations.")
                 simulating = False
+            elif event.key == pygame.K_SPACE:
+                print("Toggling the Simulation...")
+                simulating = not simulating
+            elif event.key == pygame.K_g:
+                print("Toggling Grid Display...")
+                show_grid = not show_grid
         
         pygame.display.flip()
 

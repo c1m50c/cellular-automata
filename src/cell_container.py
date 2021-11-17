@@ -35,9 +35,18 @@ class CellContainer(set):
         l: Cell = self.get_cell_at_position(position=(x + cell_size, y)) # Left
         r: Cell = self.get_cell_at_position(position=(x - cell_size, y)) # Right
         
+        tl: Cell = self.get_cell_at_position(position=(x - cell_size, y + cell_size)) # Top Left
+        tr: Cell = self.get_cell_at_position(position=(x + cell_size, y + cell_size)) # Top Right
+        bl: Cell = self.get_cell_at_position(position=(x - cell_size, y - cell_size)) # Bottom Left
+        br: Cell = self.get_cell_at_position(position=(x + cell_size, y - cell_size)) # Bottom Right
+        
         cc.add(t)
         cc.add(b)
         cc.add(l)
         cc.add(r)
+        cc.add(tl)
+        cc.add(tr)
+        cc.add(bl)
+        cc.add(br)
         
         return cc
