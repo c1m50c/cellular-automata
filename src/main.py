@@ -85,7 +85,6 @@ def main():
             CLOCK.tick(12)
             simulate()
             if len(cells) == 0:
-                print(f"Ending the Simulation with {iterations} Iterations.")
                 simulating = False
         else:
             selected_rect = pygame.Rect(x, y, CELL_SIZE, CELL_SIZE)
@@ -98,27 +97,21 @@ def main():
         if not simulating and event.type == pygame.MOUSEBUTTONDOWN :
             if event.button == 1: # Left Mouse Button Down
                 if x >= 0 and y >= 0 and x <= WIDTH and y <= HEIGHT:
-                    print(f"Placing Cell @ {x, y}")
                     cells.add(Cell(position=(x, y)))
             elif event.button == 3: # Right Mouse Button Down
                 cell = cells.get_cell_at_position((x, y))
                 if cell:
-                    print(f"Removing Cell @ {x, y}")
                     cells.remove(cells.get_cell_at_position((x, y)))
         elif not simulating and event.type == pygame.KEYDOWN:
             if event.key == pygame.K_BACKSPACE:
-                print("Clearing Grid...")
                 cells.clear()
         
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                print(f"Ending the Simulation with {iterations} Iterations.")
                 simulating = False
             elif event.key == pygame.K_SPACE:
-                print("Toggling the Simulation...")
                 simulating = not simulating
             elif event.key == pygame.K_g:
-                print("Toggling Grid Display...")
                 show_grid = not show_grid
         
         pygame.display.flip()
