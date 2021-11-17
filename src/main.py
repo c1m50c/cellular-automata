@@ -11,7 +11,7 @@ CELL_COLOR: Tuple[int, int, int] = (222, 186, 80)
 SELECTED_CELL_COLOR: Tuple[int, int, int] = (248, 248, 248)
 
 # Misc Settings #
-WIDTH, HEIGHT = 1024, 800
+WIDTH, HEIGHT = 512, 512
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 CLOCK = pygame.time.Clock()
 CELL_SIZE: int = 32
@@ -37,6 +37,8 @@ def draw_cells():
 
 def get_cell_at_mouse_pos() -> Tuple[int, int]:
     x, y = pygame.mouse.get_pos()
+    x -= CELL_SIZE // 2
+    y -= CELL_SIZE // 2
     x = CELL_SIZE * round(x / CELL_SIZE)
     y = CELL_SIZE * round(y / CELL_SIZE)
     return (x, y)
@@ -55,7 +57,8 @@ def simulate():
             elif n > 3 and cell: # Cell Dies
                 cells.remove(cell)
             elif n == 3 and not cell: # Cell Revives
-                cells.add(Cell(position=(x, y)))
+                if x >= 0 and y >= 0 and x <= WIDTH and y <= HEIGHT:
+                    cells.add(Cell(position=(x, y)))
     iterations += 1
 
 
@@ -85,8 +88,9 @@ def main():
         
         if not simulating and event.type == pygame.MOUSEBUTTONDOWN :
             if event.button == 1: # Left Mouse Button Down
-                print(f"Placing Cell @ {x, y}")
-                cells.add(Cell(position=(x, y)))
+                if x >= 0 and y >= 0 and x <= WIDTH and y <= HEIGHT:
+                    print(f"Placing Cell @ {x, y}")
+                    cells.add(Cell(position=(x, y)))
             elif event.button == 3: # Right Mouse Button Down
                 cell = cells.get_cell_at_position((x, y))
                 if cell:
