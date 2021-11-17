@@ -11,10 +11,10 @@ CELL_COLOR: Tuple[int, int, int] = (222, 186, 80)
 SELECTED_CELL_COLOR: Tuple[int, int, int] = (248, 248, 248)
 
 # Misc Settings #
-WIDTH, HEIGHT = 512, 512
+WIDTH, HEIGHT = 640, 640
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 CLOCK = pygame.time.Clock()
-CELL_SIZE: int = 16
+CELL_SIZE: int = 32
 
 # Simulation Variables #
 iterations: int = 0
@@ -47,17 +47,23 @@ def get_cell_at_mouse_pos() -> Tuple[int, int]:
 
 def simulate():
     global iterations
+    global cells
+    
+    new_cells = CellContainer()
     for x in range(0, WIDTH, CELL_SIZE):
         for y in range(0, HEIGHT, CELL_SIZE):
             neighbors = cells.get_neighbors((x, y), CELL_SIZE)
             n: int = len(neighbors)
             cell: Cell = cells.get_cell_at_position((x, y))
             
-            if (n < 2 or n > 3) and cell: # Cell Dies
-                cells.remove(cell)
+            if cell:
+                if n == 2 or n == 3:
+                    if x >= 0 and y >= 0 and x <= WIDTH and y <= HEIGHT:
+                        new_cells.add(Cell(position=(x, y)))
             elif n == 3 and not cell: # Cell Revives
                 if x >= 0 and y >= 0 and x <= WIDTH and y <= HEIGHT:
-                    cells.add(Cell(position=(x, y)))
+                    new_cells.add(Cell(position=(x, y)))
+    cells = new_cells
     iterations += 1
 
 
