@@ -1,19 +1,24 @@
-from typing import Tuple, Set
+from cell_container import CellContainer
+from typing import Tuple
 from cell import Cell
 import pygame
 
 
-BACKGROUND_COLOR: Tuple[int, int, int] = (26, 26, 26)
-GRID_COLOR: Tuple[int, int, int] = (248, 248, 248)
-CELL_COLOR: Tuple[int, int, int] = (0, 255, 128)
-SELECTED_CELL_COLOR: Tuple[int, int, int] = (255, 0, 0)
+# Color Settings #
+BACKGROUND_COLOR: Tuple[int, int, int] = (16, 16, 16)
+GRID_COLOR: Tuple[int, int, int] = (64, 64, 64)
+CELL_COLOR: Tuple[int, int, int] = (222, 186, 80)
+SELECTED_CELL_COLOR: Tuple[int, int, int] = (248, 248, 248)
 
+# Misc Settings #
 WIDTH, HEIGHT = 1024, 800
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
+CLOCK = pygame.time.Clock()
 CELL_SIZE: int = 32
 
-
-cells: Set[Cell] = set()
+# Simulation Variables #
+CELL_X, CELL_Y = 0, 0
+cells: CellContainer[Cell] = CellContainer()
 
 
 def draw_grid():
@@ -38,7 +43,20 @@ def get_cell_at_mouse_pos() -> Tuple[int, int]:
 
 
 def simulate():
-    pass
+    for x in range(0, WIDTH, CELL_SIZE):
+        for y in range(0, HEIGHT, CELL_SIZE):
+            neighbors = cells.get_neighbors((x, y), CELL_SIZE)
+            n: int = len(neighbors)
+            cell: Cell = cells.get_cell_at_position((x, y))
+            
+            if n < 2 and cell: # Cell Dies
+                cells.remove(cell)
+            elif (n == 2 or n == 3) and cell: # Cell Survives
+                continue
+            elif n > 3 and cell: # Cell Dies
+                cells.remove(cell)
+            elif n == 3 and not cell: # Cell Revives
+                cells.add(Cell(position=(x, y)))
 
 
 def main():
@@ -50,21 +68,30 @@ def main():
         draw_cells()
         draw_grid()
         
+        x, y = get_cell_at_mouse_pos()
+        
         if simulating:
             simulate()
-        
-        x, y = get_cell_at_mouse_pos()
-        selected_rect = pygame.Rect(x, y, CELL_SIZE, CELL_SIZE)
-        pygame.draw.rect(SCREEN, SELECTED_CELL_COLOR, selected_rect, 2)
+        else:
+            selected_rect = pygame.Rect(x, y, CELL_SIZE, CELL_SIZE)
+            pygame.draw.rect(SCREEN, SELECTED_CELL_COLOR, selected_rect, 2)
         
         event = pygame.event.poll()
         if event.type == pygame.QUIT:
             return
         
-        if not simulating:
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: # Left Mouse Button Down
+        if not simulating and event.type == pygame.MOUSEBUTTONDOWN :
+            if event.button == 1: # Left Mouse Button Down
                 print(f"Placing Cell @ {x, y}")
                 cells.add(Cell(position=(x, y)))
+            elif event.button == 3: # Right Mouse Button Down
+                cell = cells.get_cell_at_position((x, y))
+                if cell:
+                    print(f"Removing Cell @ {x, y}")
+                    cells.remove(cells.get_cell_at_position((x, y)))
+        elif not simulating and event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                simulating = True
         
         pygame.display.flip()
 
