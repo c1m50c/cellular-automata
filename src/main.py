@@ -11,7 +11,7 @@ CELL_COLOR: Tuple[int, int, int] = (222, 186, 80)
 SELECTED_CELL_COLOR: Tuple[int, int, int] = (248, 248, 248)
 
 # Misc Settings #
-WIDTH, HEIGHT = 640, 640
+WIDTH, HEIGHT = 1280, 1024
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 CLOCK = pygame.time.Clock()
 CELL_SIZE: int = 32
@@ -52,17 +52,16 @@ def simulate():
     new_cells = CellContainer()
     for x in range(0, WIDTH, CELL_SIZE):
         for y in range(0, HEIGHT, CELL_SIZE):
-            neighbors = cells.get_neighbors((x, y), CELL_SIZE)
+            neighbors = cells.get_neighbors((x, y), CELL_SIZE, (WIDTH, HEIGHT))
             n: int = len(neighbors)
             cell: Cell = cells.get_cell_at_position((x, y))
             
             if cell:
                 if n == 2 or n == 3:
-                    if x >= 0 and y >= 0 and x <= WIDTH and y <= HEIGHT:
-                        new_cells.add(Cell(position=(x, y)))
+                    new_cells.add(Cell(position=(x, y)), extents=(WIDTH, HEIGHT))
             elif n == 3 and not cell: # Cell Revives
-                if x >= 0 and y >= 0 and x <= WIDTH and y <= HEIGHT:
-                    new_cells.add(Cell(position=(x, y)))
+                new_cells.add(Cell(position=(x, y)), extents=(WIDTH, HEIGHT))
+    
     cells = new_cells
     iterations += 1
 
@@ -97,7 +96,7 @@ def main():
         if not simulating and event.type == pygame.MOUSEBUTTONDOWN :
             if event.button == 1: # Left Mouse Button Down
                 if x >= 0 and y >= 0 and x <= WIDTH and y <= HEIGHT:
-                    cells.add(Cell(position=(x, y)))
+                    cells.add(Cell(position=(x, y)), extents=(WIDTH, HEIGHT))
             elif event.button == 3: # Right Mouse Button Down
                 cell = cells.get_cell_at_position((x, y))
                 if cell:
