@@ -1,6 +1,8 @@
 # **cellular-automata**
 Python Project implementing a few cellular automata simulations with PyGame.
 
+![Preview Image](https://raw.githubusercontent.com/c1m50c/cellular-automata/assets/preview.gif)
+
 ---
 
 ## **Requirements**
